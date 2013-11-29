@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+    <title> chat </title>
+
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+</head>
+
+<body>
+
+    <style>
+        #chatwindow {
+            width: 600px;
+            height: 100%;
+            height: 600px;
+            overflow: scroll;
+            
+        }
+
+        #input {
+            width: 500px;
+            margin-right: 50px;
+        }
+
+        #submit-text {
+            position: relative;
+            width: 100px;
+        }
+    </style>
+
+
+    <div style="clear:both;"> </div> 
+ 
+    <div id="chatwindow"> </div> 
+    
+    <input id="input"> </input>
+    <button id="submit-text"> submit </button>
+    
+
+
+    <script>
+
+
+        var socket = {};
+        var input = $("#input");
+
+        window.setTimeout(function(){
+            socket = io.connect("http://ressler.us");
+        
+            socket.on('news', function (data) {
+                console.log("responding to the news event handler");
+                console.log(data);
+                
+                var chatBox = $("#chatwindow");
+                var oldText = chatBox.html();
+                
+                chatBox.html(oldText + " <br> " + data.text);
+                
+            });
+
+        },1000);
+        
+        input.keyup(function(e) {
+            if(e.keyCode == 13) {
+                var chatBox = $("#chatwindow");
+                var oldText = chatBox.html();
+                
+                
+                
+                var reply = input.val();
+                
+                chatBox.html(oldText + " <br> " + reply);
+                socket.emit("reply", {text:reply});
+                input.val("");
+            }
+        }); 
+        $("#submit-text").click(function(e){
+            
+            var chatBox = $("#chatwindow");
+            var oldText = chatBox.html();
+            
+            
+            
+            var reply = input.val();
+            
+            chatBox.html(oldText + " <br> " + reply);
+            socket.emit("reply", {text:reply});
+            input.val("");
+            
+        });
+
+
+        
+    </script>
+</body>
+
+</html>
